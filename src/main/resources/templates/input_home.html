@@ -12,7 +12,8 @@ th, td {
 <title>Add New Home</title>
 </head>
 <body>
-	<form th:object="${newHome}" th:action="@{/update/{id}(id=${newHome.id})}" method='POST'>	
+	<!-- WITH HTML5 EDITS
+	<form id="addNewHomeForm" th:object="${newHome}" th:action="@{/update/{id}(id=${newHome.id})}" method='POST'>	
 		<table style="width: 18%">
 			<tr>
 				<th>Type:</th>
@@ -32,7 +33,37 @@ th, td {
 			</tr>
 			<tr>
 				<th>Bathrooms:</th>
-				<td><input type="number" step="0.5" name="baths" size="3" maxlength="3" min="1" max="999" th:field="*{baths}" required></td>
+				<td><input type="number" step="0.25" name="baths" size="3" maxlength="3" min="1" max="999" th:field="*{baths}" required></td>
+			</tr>
+			<tr>
+				<th><input name="submit" type="submit" value="Submit"></th>
+			</tr>
+		</table>
+		<br />
+	</form> 
+	-->
+	<!-- WITHOUT HTML5 EDITS (JAVASCRIPT ONLY) -->
+	<form th:object="${newHome}" th:action="@{/update/{id}(id=${newHome.id})}" method='POST' onsubmit="return validateForm(this);">	
+		<table style="width: 18%">
+			<tr>
+				<th>Type:</th>
+				<td><input type="text" name="type" th:field="*{type}"></td>
+			</tr>
+			<tr>
+				<th>Year Built:</th>
+				<td><input type="text" name="yearBuilt" th:field="*{yearBuilt}"></td>
+			</tr>
+			<tr>
+				<th>Square Feet:</th>
+				<td><input type="text" name="houseSqFt" th:field="*{houseSqFt}"></td>
+			</tr>
+			<tr>
+				<th>Bedrooms:</th>
+				<td><input type="text" name="beds" th:field="*{beds}"></td>
+			</tr>
+			<tr>
+				<th>Bathrooms:</th>
+				<td><input type="text" name="baths" th:field="*{baths}"></td>
 			</tr>
 			<tr>
 				<th><input name="submit" type="submit" value="Submit"></th>
@@ -42,4 +73,118 @@ th, td {
 	</form>
 	<a href="/viewAll">View all homes</a>
 </body>
+<script type="text/javascript"> 
+	
+	function validateForm(form) {	
+	    
+		// Type: Required field
+	    if(form.type.value == "") {
+	    	alert("This field is required.");
+	    	form.type.focus();
+	    	return false;
+	    }
+		
+	 	// Type: Alpha only
+	    var reg = /^[a-zA-z]+$/;	 	
+	    if(!reg.test(form.type.value)) {
+	    	alert("Type must be alphabetic.");
+	    	form.type.focus();
+	    	return false;
+	    }
+	 	
+	 	// Type: 30 characters or less
+	 	if(form.type.value.length > 30) {
+	 		alert("Type cannot be more than 30 characters.");
+	    	form.type.focus();
+	    	return false;
+	 	}
+	    
+	    // Year Built: Required Field
+	    if(form.yearBuilt.value == "") {
+	    	alert("This field is required.");
+	    	form.yearBuilt.focus();
+	    	return false;
+	    }
+	 	 	
+	 	// Year Built: Exactly 4 digits
+	 	var reg = /^[0-9]+$/;
+	 	if(!reg.test(form.yearBuilt.value) || form.yearBuilt.value.length != 4) {
+	 		alert("Year Built must be exactly 4 digits.");
+	    	form.yearBuilt.focus();
+	    	return false;
+	 	}
+	    
+	 	// Square Feet: Required Field
+	    if(form.houseSqFt.value == "") {
+	    	alert("This field is required.");
+	    	form.houseSqFt.focus();
+	    	return false;
+	    }
+	 	
+	    // Square Feet: Numeric only
+	    var reg = /^[0-9]+$/;	 		
+	    if(!reg.test(form.houseSqFt.value)) {
+	    	alert("Square Feet must be an integer.");
+	    	form.houseSqFt.focus();
+	    	return false;
+	    }
+	    
+	    // Square Feet: Must be > 0 and <= 999999
+	 	var input = parseInt(form.houseSqFt.value);
+	 	if(!(input > 0 && input <= 999999)) {
+	 		alert("Square Feet must be an integer between 1-999999");
+	    	form.houseSqFt.focus();
+	    	return false;
+	 	}
+	    
+	 	// Bedrooms: Required Field
+	    if(form.beds.value == "") {
+	    	alert("This field is required.");
+	    	form.beds.focus();
+	    	return false;
+	    }
+	    
+	    // Bedrooms: Numeric only
+	    var reg = /^[0-9]+$/;
+	    if(!reg.test(form.beds.value)) {
+	    	alert("Bedrooms must be an integer.");
+	    	form.beds.focus();
+	    	return false;
+	    }
+	    
+	 	// Bedrooms: Must be > 0 and <= 999
+	 	var input = parseInt(form.beds.value);
+	 	if(!(input > 0 && input <= 999)) {
+	 		alert("Bedrooms must be a number between 1-999");
+	    	form.beds.focus();
+	    	return false;
+	 	}
+	    
+	    // Bathrooms: Required Field
+	    if(form.baths.value == "") {
+	    	alert("This field is required.");
+	    	form.baths.focus();
+	    	return false;
+	    }
+	        
+	    // Bathrooms: Decmial format, increments of .25 only
+	    var reg = /^[0-9]+[.]{1}[0|00|25|5|50|75]+$/;
+	 	if(!reg.test(form.baths.value)) {
+	    	alert("Bathrooms must be a decimal in increments of .25 (i.e. 1.0, 1.25, 1.5, 1.75).");
+	    	form.baths.focus();
+	    	return false;
+	    }
+	 	
+	 	// Bathrooms: Must be > 0 and <= 999
+	 	var input = parseFloat(form.baths.value);
+	 	if(!(input > 0.0 && input <= 999.0)) {
+	 		alert("Bathrooms must be a number between 1.0-999.0");
+	    	form.baths.focus();
+	    	return false;
+	 	}
+	    
+	    // validation was successful
+	    return true;
+  	};
+</script>
 </html>
